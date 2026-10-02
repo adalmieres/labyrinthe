@@ -6,8 +6,13 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            margin: 20px;
+            margin: 0;
+            padding: 20px;
             background: #f5f5f5;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
         }
         
         /* Configuration du plateau */
@@ -17,6 +22,8 @@
             border-radius: 8px;
             margin-bottom: 20px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 800px;
         }
         
         #config-section h2 {
@@ -34,7 +41,7 @@
             font-weight: bold;
         }
         
-        select, button {
+        select, button, input[type="text"] {
             padding: 8px 12px;
             margin-right: 10px;
             border: 1px solid #ccc;
@@ -61,7 +68,9 @@
         /* Plateau */
         #plateau-container {
             position: relative;
-            margin: 20px 0;
+            margin: 20px auto;
+            display: flex;
+            justify-content: center;
         }
         
         #plateau {
@@ -70,6 +79,7 @@
             grid-template-rows: repeat(7, 60px);
             gap: 1px;
             background: #333;
+            border: 2px solid #333;
             margin: 0 auto;
             position: relative;
         }
@@ -94,7 +104,7 @@
         }
         
         .case.chemin-optimal {
-            background: rgba(0, 255, 0, 0.3) !important;
+            background: rgba(200, 200, 200, 0.5) !important;
         }
         
         .case.meilleur-coup {
@@ -121,10 +131,10 @@
             background: #8B4513; /* Marron */
         }
         
-        .mur.haut { top: 0; left: 0; width: 60px; height: 8px; }
-        .mur.droite { top: 0; right: 0; width: 8px; height: 60px; }
-        .mur.bas { bottom: 0; left: 0; width: 60px; height: 8px; }
-        .mur.gauche { top: 0; left: 0; width: 8px; height: 60px; }
+        .mur.haut { top: 0; left: 0; width: 60px; height: 12px; }
+        .mur.droite { top: 0; right: 0; width: 12px; height: 60px; }
+        .mur.bas { bottom: 0; left: 0; width: 60px; height: 12px; }
+        .mur.gauche { top: 0; left: 0; width: 12px; height: 60px; }
         
         /* Pions */
         .pion {
@@ -140,6 +150,7 @@
             color: white;
             font-weight: bold;
             box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            margin: auto;
         }
         
         .pion.dragging {
@@ -155,7 +166,7 @@
         /* Trésors */
         .tresor {
             font-size: 28px;
-            z-index: 5;
+            z-index: 6;
             text-shadow: 0 1px 2px rgba(0,0,0,0.5);
         }
         
@@ -191,6 +202,8 @@
             background: #fff;
             border-radius: 8px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 800px;
         }
         
         #controls h3 {
@@ -205,6 +218,8 @@
             background: #E3F2FD;
             border-radius: 8px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 800px;
         }
         
         #resultat h3 {
@@ -259,6 +274,28 @@
         
         #objectif-joueur .tresor-icon {
             font-size: 24px;
+        }
+        
+        /* Sélecteur d'objectif */
+        #objectif-selector {
+            margin-top: 10px;
+            padding: 10px;
+            background: rgba(230, 242, 255, 0.5);
+            border-radius: 5px;
+            text-align: center;
+        }
+        
+        .tresor-option {
+            display: inline-block;
+            font-size: 24px;
+            margin: 5px;
+            cursor: pointer;
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+        
+        .tresor-option:hover {
+            background: rgba(0, 120, 215, 0.2);
         }
         
         /* Boutons d'action */
@@ -327,6 +364,11 @@
                 Votre objectif : <span id="objectif-texte">Aucun</span>
                 <span id="objectif-icon" class="tresor-icon"></span>
             </div>
+            
+            <div id="objectif-selector">
+                <label>Choisir un objectif : </label>
+                <div id="tresors-disponibles"></div>
+            </div>
         </div>
         
         <div id="indicateur-tour">
@@ -340,43 +382,43 @@
             </label>
             
             <div class="tuile-selector" id="tuile-selector" style="display: none;">
-                <div class="tuile-option" data-type="1" data-orientation="0" onclick="selectTuileType(1, 0)">
+                <div class="tuile-option" data-type="1" onclick="selectTuileType(1)">
                     <div class="mur haut"></div>
                     <div class="mur droite"></div>
                     <div class="mur bas"></div>
                     <div class="mur gauche"></div>
                 </div>
-                <div class="tuile-option" data-type="3" data-orientation="0" onclick="selectTuileType(3, 0)">
+                <div class="tuile-option" data-type="3" onclick="selectTuileType(3)">
                     <div class="mur bas"></div>
                     <div class="mur gauche"></div>
                 </div>
-                <div class="tuile-option" data-type="5" data-orientation="0" onclick="selectTuileType(5, 0)">
+                <div class="tuile-option" data-type="5" onclick="selectTuileType(5)">
                     <div class="mur droite"></div>
                     <div class="mur gauche"></div>
                 </div>
-                <div class="tuile-option" data-type="6" data-orientation="0" onclick="selectTuileType(6, 0)">
+                <div class="tuile-option" data-type="6" onclick="selectTuileType(6)">
                     <div class="mur haut"></div>
                     <div class="mur gauche"></div>
                 </div>
-                <div class="tuile-option" data-type="9" data-orientation="0" onclick="selectTuileType(9, 0)">
+                <div class="tuile-option" data-type="9" onclick="selectTuileType(9)">
                     <div class="mur haut"></div>
                     <div class="mur droite"></div>
                 </div>
-                <div class="tuile-option" data-type="10" data-orientation="0" onclick="selectTuileType(10, 0)">
+                <div class="tuile-option" data-type="10" onclick="selectTuileType(10)">
                     <div class="mur bas"></div>
                     <div class="mur droite"></div>
                 </div>
-                <div class="tuile-option" data-type="12" data-orientation="0" onclick="selectTuileType(12, 0)">
+                <div class="tuile-option" data-type="12" onclick="selectTuileType(12)">
                     <div class="mur haut"></div>
                     <div class="mur bas"></div>
                 </div>
-                <div class="tuile-option" data-type="15" data-orientation="0" onclick="selectTuileType(15, 0)">
+                <div class="tuile-option" data-type="15" onclick="selectTuileType(15)">
                     <!-- Pas de murs -->
                 </div>
             </div>
             
             <div class="action-buttons">
-                <button onclick="initialiserPlateauPhysique()">🏗️ Initialiser comme plateau physique</button>
+                <button onclick="initialiserPlateauPhysique()">🏗️ Plateau vide (fixes uniquement)</button>
                 <button onclick="initialiserPartieAleatoire()">🎲 Partie aléatoire</button>
                 <button onclick="reinitialiser()">🔄 Tout réinitialiser</button>
             </div>
@@ -465,14 +507,6 @@
                 if (!this.aPassage(TuileBitmap.BAS)) murs.push("bas");
                 if (!this.aPassage(TuileBitmap.GAUCHE)) murs.push("gauche");
                 return murs;
-            }
-            
-            obtenirRotationActuelle() {
-                // Retourne l'orientation actuelle (0, 1, 2, 3)
-                // Cette méthode suppose que la tuile a été tournée depuis sa position initiale
-                // Pour simplifier, on va juste retourner 0 par défaut
-                // (En pratique, il faudrait suivre la rotation dans la classe)
-                return 0;
             }
         }
 
@@ -588,44 +622,39 @@
         // ====================== INITIALISATION ======================
 
         function initialiserPlateauPhysique() {
-            // Initialisation des tuiles fixes aux coins
+            // Initialisation des tuiles fixes aux coins (vide sauf fixes)
+            plateau.grille = Array(7).fill().map(() => Array(7).fill(null));
+            
+            // Placer uniquement les tuiles fixes aux coins
             plateau.grille[0][0] = new TuileBitmap(3, null, true); // L (haut+droite)
             plateau.grille[0][6] = new TuileBitmap(6, null, true); // L (droite+bas)
             plateau.grille[6][0] = new TuileBitmap(12, null, true); // L (gauche+bas)
             plateau.grille[6][6] = new TuileBitmap(9, null, true); // L (haut+gauche)
             
-            // Initialisation des tuiles mobiles (exemple basé sur le plateau physique classique)
-            const tuilesPhysiques = [
-                [5, 1, 5, 1, 5, 1, 5], // Rangée 0
-                [2, 10, 14, 14, 14, 13, 2], // Rangée 1
-                [5, 13, 14, 14, 14, 10, 5], // Rangée 2
-                [1, 14, 14, 15, 14, 14, 1], // Rangée 3 (centre)
-                [5, 10, 14, 14, 14, 13, 5], // Rangée 4
-                [2, 13, 14, 14, 14, 10, 2], // Rangée 5
-                [5, 1, 5, 1, 5, 1, 5]  // Rangée 6
-            ];
+            // Réinitialiser la tuile supplémentaire
+            plateau.tuileSupplementaire = new TuileBitmap(5); // I (haut+bas)
             
-            for (let y = 0; y < 7; y++) {
-                for (let x = 0; x < 7; x++) {
-                    // Ne pas écraser les tuiles fixes
-                    if (!plateau.grille[y][x]) {
-                        plateau.grille[y][x] = new TuileBitmap(tuilesPhysiques[y][x]);
-                    }
-                }
-            }
+            // Réinitialiser les pions
+            plateau.positionsPions = {
+                rouge: new Position(0, 0),
+                bleu: new Position(0, 6),
+                jaune: new Position(6, 0),
+                vert: new Position(6, 6)
+            };
             
-            // Placer des trésors aléatoires
+            // Réinitialiser les trésors et cartes
             initialiserTresors();
-            
-            // Réinitialiser les cartes des joueurs
             initialiserCartesJoueurs();
             
             afficherPlateau();
             mettreAJourIndicateurTour();
+            mettreAJourObjectif();
+            afficherTresorsDisponibles();
         }
         
         function initialiserPartieAleatoire() {
             // Initialiser les tuiles fixes
+            plateau.grille = Array(7).fill().map(() => Array(7).fill(null));
             plateau.grille[0][0] = new TuileBitmap(3, null, true);
             plateau.grille[0][6] = new TuileBitmap(6, null, true);
             plateau.grille[6][0] = new TuileBitmap(12, null, true);
@@ -647,6 +676,8 @@
             
             afficherPlateau();
             mettreAJourIndicateurTour();
+            mettreAJourObjectif();
+            afficherTresorsDisponibles();
         }
         
         function initialiserTresors() {
@@ -668,7 +699,7 @@
                 do {
                     x = Math.floor(Math.random() * 7);
                     y = Math.floor(Math.random() * 7);
-                } while (plateau.grille[y][x].estFixe); // Éviter les tuiles fixes
+                } while (plateau.grille[y][x]?.estFixe); // Éviter les tuiles fixes
                 
                 const symbole = symbolesTresors[i % symbolesTresors.length];
                 plateau.grille[y][x].aTresor = symbole;
@@ -678,14 +709,14 @@
         
         function initialiserCartesJoueurs() {
             const couleurs = ["rouge", "bleu", "jaune", "vert"];
-            const symboles = Object.keys(plateau.tresors);
             
             // Répartir les trésors entre les joueurs
-            for (let i = 0; i < couleurs.length; i++) {
-                plateau.cartesJoueurs[couleurs[i]] = [];
+            for (let couleur of couleurs) {
+                plateau.cartesJoueurs[couleur] = [];
             }
             
             // Mélanger les symboles
+            const symboles = Object.keys(plateau.tresors);
             const symbolesMelanges = [...symboles].sort(() => Math.random() - 0.5);
             
             // Distribuer 3 trésors par joueur
@@ -695,8 +726,9 @@
             }
             
             mettreAJourObjectif();
+            afficherTresorsDisponibles();
         }
-
+        
         function reinitialiser() {
             plateau = new PlateauBitmap();
             initialiserPartieAleatoire();
@@ -902,6 +934,37 @@
                 return y === coup.index;
             } else { // colonne
                 return x === coup.index;
+            }
+        }
+        
+        function afficherTresorsDisponibles() {
+            const container = document.getElementById("tresors-disponibles");
+            container.innerHTML = "";
+            
+            const couleurJoueur = document.getElementById("joueur-actuel").value;
+            const tresors = plateau.cartesJoueurs[couleurJoueur];
+            
+            if (tresors.length === 0) {
+                container.innerHTML = "<p>Tous les trésors trouvés ! ✅</p>";
+                return;
+            }
+            
+            for (const tresor of tresors) {
+                const option = document.createElement("span");
+                option.className = "tresor-option";
+                option.textContent = tresor;
+                option.onclick = () => {
+                    // Définir cet objectif comme actuel
+                    const index = tresors.indexOf(tresor);
+                    if (index > 0) {
+                        // Échanger avec le premier
+                        [tresors[0], tresors[index]] = [tresors[index], tresors[0]];
+                        plateau.cartesJoueurs[couleurJoueur] = tresors;
+                        mettreAJourObjectif();
+                        afficherTresorsDisponibles();
+                    }
+                };
+                container.appendChild(option);
             }
         }
 
@@ -1136,6 +1199,25 @@
             
             plateau = simulerCoup(plateau, meilleurCoupGlobal);
             
+            // Vérifier si le joueur a atteint son trésor
+            const couleurJoueur = document.getElementById("joueur-actuel").value;
+            const tresorActuel = plateau.obtenirProchainTresor(couleurJoueur);
+            if (tresorActuel) {
+                const tresorPos = plateau.obtenirPositionTresor(tresorActuel);
+                const joueurPos = plateau.positionsPions[couleurJoueur];
+                
+                if (joueurPos.equals(tresorPos)) {
+                    // Retirer le trésor de la pile du joueur
+                    plateau.cartesJoueurs[couleurJoueur].shift();
+                    // Retirer le trésor du plateau
+                    if (plateau.grille[joueurPos.y][joueurPos.x]) {
+                        plateau.grille[joueurPos.y][joueurPos.x].aTresor = null;
+                    }
+                    mettreAJourObjectif();
+                    afficherTresorsDisponibles();
+                }
+            }
+            
             // Passer au tour suivant
             passerTour();
             
@@ -1144,9 +1226,6 @@
             cheminOptimalGlobal = [];
             
             afficherPlateau();
-            document.getElementById("meilleur-coup").textContent = "Aucun calculé";
-            document.getElementById("chemin-longueur").textContent = "-";
-            document.getElementById("score-coup").textContent = "-";
         }
         
         function simulerCoupAleatoire() {
@@ -1158,7 +1237,6 @@
             passerTour();
             
             afficherPlateau();
-            mettreAJourObjectif();
         }
         
         function passerTour() {
@@ -1168,7 +1246,6 @@
             plateau.tourActuel = couleurs[indexSuivant];
             
             mettreAJourIndicateurTour();
-            mettreAJourObjectif();
         }
 
         // ====================== FONCTIONS UI ======================
@@ -1180,13 +1257,13 @@
             
             if (modeEdition) {
                 // Sélectionner la première tuile par défaut
-                selectTuileType(5, 0);
+                selectTuileType(5);
             }
             
             afficherPlateau();
         }
         
-        function selectTuileType(bits, rotation) {
+        function selectTuileType(bits) {
             // Désélectionner les autres
             document.querySelectorAll('.tuile-option').forEach(el => {
                 el.classList.remove('selected');
@@ -1196,11 +1273,7 @@
             event.target.classList.add('selected');
             
             // Créer la tuile
-            let tuile = new TuileBitmap(bits);
-            for (let i = 0; i < rotation; i++) {
-                tuile = tuile.tourner90();
-            }
-            tuileSelectionnee = tuile;
+            tuileSelectionnee = new TuileBitmap(bits);
         }
         
         function mettreAJourObjectif() {
@@ -1218,6 +1291,8 @@
                 texteEl.textContent = "Tous les trésors trouvés !";
                 iconEl.textContent = "✅";
             }
+            
+            afficherTresorsDisponibles();
         }
         
         function mettreAJourIndicateurTour() {
@@ -1234,6 +1309,7 @@
         initialiserPlateauPhysique();
         mettreAJourIndicateurTour();
         mettreAJourObjectif();
+        afficherTresorsDisponibles();
     </script>
 </body>
 </html>
