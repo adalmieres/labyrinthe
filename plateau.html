@@ -9,17 +9,74 @@
             margin: 20px;
             background: #f5f5f5;
         }
-        #plateau {
-            display: grid;
-            grid-template-columns: repeat(7, 50px);
-            grid-template-rows: repeat(7, 50px);
-            gap: 1px;
-            background: #333;
+        
+        /* Configuration du plateau */
+        #config-section {
+            background: #fff;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        #config-section h2 {
+            margin-top: 0;
+            color: #333;
+        }
+        
+        .config-group {
+            margin-bottom: 15px;
+        }
+        
+        .config-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        select, button {
+            padding: 8px 12px;
+            margin-right: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background: #fff;
+            cursor: pointer;
+        }
+        
+        button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+        }
+        
+        button:hover {
+            background: #45a049;
+        }
+        
+        button:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+        }
+        
+        /* Plateau */
+        #plateau-container {
+            position: relative;
             margin: 20px 0;
         }
+        
+        #plateau {
+            display: grid;
+            grid-template-columns: repeat(7, 60px);
+            grid-template-rows: repeat(7, 60px);
+            gap: 1px;
+            background: #333;
+            margin: 0 auto;
+            position: relative;
+        }
+        
         .case {
-            width: 50px;
-            height: 50px;
+            width: 60px;
+            height: 60px;
             background: white;
             display: flex;
             align-items: center;
@@ -27,70 +84,325 @@
             font-size: 20px;
             position: relative;
             overflow: hidden;
+            cursor: pointer;
+            user-select: none;
         }
+        
         .case.fixe {
             background: #eee;
+            cursor: not-allowed;
         }
+        
+        .case.chemin-optimal {
+            background: rgba(0, 255, 0, 0.3) !important;
+        }
+        
+        .case.meilleur-coup {
+            background: rgba(255, 255, 0, 0.4) !important;
+            box-shadow: inset 0 0 10px rgba(255, 255, 0, 0.7);
+        }
+        
+        .case.meilleur-coup-insertion {
+            background: rgba(0, 200, 255, 0.4) !important;
+            box-shadow: inset 0 0 10px rgba(0, 200, 255, 0.7);
+        }
+        
+        .case.draggable {
+            cursor: grab;
+        }
+        
+        .case.dragging {
+            opacity: 0.5;
+        }
+        
+        /* Murs */
         .mur {
             position: absolute;
-            background: brown;
+            background: #8B4513; /* Marron */
         }
-        .mur.haut { top: 0; left: 0; width: 50px; height: 15px; }
-        .mur.droite { top: 0; right: 0; width: 15px; height: 50px; }
-        .mur.bas { bottom: 0; left: 0; width: 50px; height: 15px; }
-        .mur.gauche { top: 0; left: 0; width: 15px; height: 50px; }
+        
+        .mur.haut { top: 0; left: 0; width: 60px; height: 8px; }
+        .mur.droite { top: 0; right: 0; width: 8px; height: 60px; }
+        .mur.bas { bottom: 0; left: 0; width: 60px; height: 8px; }
+        .mur.gauche { top: 0; left: 0; width: 8px; height: 60px; }
+        
+        /* Pions */
         .pion {
-            width: 30px;
-            height: 30px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
             position: absolute;
             z-index: 10;
+            cursor: grab;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
         }
-        .pion.rouge { background: red; }
-        .pion.bleu { background: blue; }
-        .pion.jaune { background: gold; }
-        .pion.vert { background: green; }
+        
+        .pion.dragging {
+            opacity: 0.7;
+            z-index: 20;
+        }
+        
+        .pion.rouge { background: #FF5252; }
+        .pion.bleu { background: #4285F4; }
+        .pion.jaune { background: #FFEB3B; color: #333; }
+        .pion.vert { background: #4CAF50; }
+        
+        /* Trésors */
         .tresor {
-            font-size: 24px;
+            font-size: 28px;
             z-index: 5;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.5);
         }
+        
+        /* Indicateur de tuile supplémentaire */
+        #tuile-supplementaire-indicateur {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            background: rgba(0, 200, 255, 0.6);
+            border: 3px dashed #00B4FF;
+            border-radius: 5px;
+            display: none;
+            z-index: 15;
+            pointer-events: none;
+        }
+        
+        #tuile-supplementaire-indicateur .tuile-preview {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            background: white;
+        }
+        
+        #tuile-supplementaire-indicateur .mur {
+            position: absolute;
+            background: #8B4513;
+        }
+        
+        /* Controls */
         #controls {
             margin: 20px 0;
-            padding: 10px;
-            background: #ddd;
-            border-radius: 5px;
+            padding: 15px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
-        button {
-            padding: 8px 15px;
-            margin: 5px;
-            cursor: pointer;
+        
+        #controls h3 {
+            margin-top: 0;
+            color: #333;
         }
+        
+        /* Résultat */
         #resultat {
             margin-top: 20px;
-            padding: 10px;
-            background: #e6f7ff;
-            border-radius: 5px;
+            padding: 15px;
+            background: #E3F2FD;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
-        .chemin {
-            background: rgba(0, 255, 0, 0.3) !important;
+        
+        #resultat h3 {
+            margin-top: 0;
+            color: #1976D2;
+        }
+        
+        /* Mode édition */
+        #mode-edition {
+            background: #FFF9C4;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+        
+        .tuile-selector {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .tuile-option {
+            width: 50px;
+            height: 50px;
+            background: white;
+            border: 2px solid #ccc;
+            border-radius: 5px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .tuile-option.selected {
+            border-color: #4CAF50;
+            box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
+        }
+        
+        .tuile-option .mur {
+            position: absolute;
+            background: #8B4513;
+        }
+        
+        /* Objectif joueur */
+        #objectif-joueur {
+            margin-top: 10px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 5px;
+            text-align: center;
+        }
+        
+        #objectif-joueur .tresor-icon {
+            font-size: 24px;
+        }
+        
+        /* Boutons d'action */
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+        
+        /* Indicateur de tour */
+        #indicateur-tour {
+            margin-bottom: 15px;
+            padding: 10px;
+            background: #E8F5E9;
+            border-radius: 5px;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        /* Tooltip */
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 200px;
+            background-color: #555;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -100px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
         }
     </style>
 </head>
 <body>
     <h1>🧩 Labyrinthe Solver (JS - Sans Serveur)</h1>
 
-    <div id="plateau"></div>
+    <div id="config-section">
+        <h2>⚙️ Configuration</h2>
+        
+        <div class="config-group">
+            <label for="joueur-actuel">Votre couleur :</label>
+            <select id="joueur-actuel" onchange="mettreAJourObjectif()">
+                <option value="rouge">🔴 Rouge</option>
+                <option value="bleu">🔵 Bleu</option>
+                <option value="jaune">🟡 Jaune</option>
+                <option value="vert">🟢 Vert</option>
+            </select>
+            
+            <div id="objectif-joueur">
+                Votre objectif : <span id="objectif-texte">Aucun</span>
+                <span id="objectif-icon" class="tresor-icon"></span>
+            </div>
+        </div>
+        
+        <div id="indicateur-tour">
+            Tour actuel : <span id="tour-actuel">🔴 Rouge</span>
+        </div>
+        
+        <div id="mode-edition">
+            <label>
+                <input type="checkbox" id="mode-edition-toggle" onchange="toggleModeEdition()"> 
+                Mode édition (positionner les tuiles)
+            </label>
+            
+            <div class="tuile-selector" id="tuile-selector" style="display: none;">
+                <div class="tuile-option" data-type="1" data-orientation="0" onclick="selectTuileType(1, 0)">
+                    <div class="mur haut"></div>
+                    <div class="mur droite"></div>
+                    <div class="mur bas"></div>
+                    <div class="mur gauche"></div>
+                </div>
+                <div class="tuile-option" data-type="3" data-orientation="0" onclick="selectTuileType(3, 0)">
+                    <div class="mur bas"></div>
+                    <div class="mur gauche"></div>
+                </div>
+                <div class="tuile-option" data-type="5" data-orientation="0" onclick="selectTuileType(5, 0)">
+                    <div class="mur droite"></div>
+                    <div class="mur gauche"></div>
+                </div>
+                <div class="tuile-option" data-type="6" data-orientation="0" onclick="selectTuileType(6, 0)">
+                    <div class="mur haut"></div>
+                    <div class="mur gauche"></div>
+                </div>
+                <div class="tuile-option" data-type="9" data-orientation="0" onclick="selectTuileType(9, 0)">
+                    <div class="mur haut"></div>
+                    <div class="mur droite"></div>
+                </div>
+                <div class="tuile-option" data-type="10" data-orientation="0" onclick="selectTuileType(10, 0)">
+                    <div class="mur bas"></div>
+                    <div class="mur droite"></div>
+                </div>
+                <div class="tuile-option" data-type="12" data-orientation="0" onclick="selectTuileType(12, 0)">
+                    <div class="mur haut"></div>
+                    <div class="mur bas"></div>
+                </div>
+                <div class="tuile-option" data-type="15" data-orientation="0" onclick="selectTuileType(15, 0)">
+                    <!-- Pas de murs -->
+                </div>
+            </div>
+            
+            <div class="action-buttons">
+                <button onclick="initialiserPlateauPhysique()">🏗️ Initialiser comme plateau physique</button>
+                <button onclick="initialiserPartieAleatoire()">🎲 Partie aléatoire</button>
+                <button onclick="reinitialiser()">🔄 Tout réinitialiser</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="plateau-container">
+        <div id="plateau"></div>
+        <div id="tuile-supplementaire-indicateur"></div>
+    </div>
 
     <div id="controls">
-        <h3>Actions</h3>
-        <button onclick="calculerMeilleurCoup()">🔍 Calculer le meilleur coup</button>
-        <button onclick="simulerCoupAleatoire()">🎲 Coup aléatoire</button>
-        <button onclick="reinitialiser()">🔄 Réinitialiser</button>
+        <h3>🎮 Actions</h3>
+        <div class="action-buttons">
+            <button onclick="calculerMeilleurCoup()">🔍 Calculer le meilleur coup</button>
+            <button onclick="simulerCoupAleatoire()">🎲 Coup aléatoire</button>
+            <button onclick="jouerMeilleurCoup()">➡️ Jouer le meilleur coup</button>
+            <button onclick="passerTour()">🔄 Passer le tour</button>
+        </div>
     </div>
 
     <div id="resultat">
+        <h3>📊 Résultat</h3>
         <p>Meilleur coup : <span id="meilleur-coup">Aucun calculé</span></p>
         <p>Chemin : <span id="chemin-longueur">-</span> étapes</p>
+        <p>Score : <span id="score-coup">-</span></p>
     </div>
 
     <script>
@@ -128,7 +440,6 @@
             }
 
             tourner90() {
-                // Rotation horaire : HAUT→GAUCHE, DROITE→HAUT, BAS→DROITE, GAUCHE→BAS
                 return new TuileBitmap(
                     ((this.bits & TuileBitmap.HAUT) << 3) |  // HAUT → GAUCHE
                     ((this.bits & TuileBitmap.DROITE) >> 1) |  // DROITE → HAUT
@@ -147,7 +458,6 @@
                 return this.tourner90().tourner90().tourner90();
             }
 
-            // Pour l'affichage
             obtenirMurs() {
                 const murs = [];
                 if (!this.aPassage(TuileBitmap.HAUT)) murs.push("haut");
@@ -155,6 +465,14 @@
                 if (!this.aPassage(TuileBitmap.BAS)) murs.push("bas");
                 if (!this.aPassage(TuileBitmap.GAUCHE)) murs.push("gauche");
                 return murs;
+            }
+            
+            obtenirRotationActuelle() {
+                // Retourne l'orientation actuelle (0, 1, 2, 3)
+                // Cette méthode suppose que la tuile a été tournée depuis sa position initiale
+                // Pour simplifier, on va juste retourner 0 par défaut
+                // (En pratique, il faudrait suivre la rotation dans la classe)
+                return 0;
             }
         }
 
@@ -170,6 +488,13 @@
                     vert: new Position(6, 6)
                 };
                 this.tresors = {}; // { "couronne": Position, ... }
+                this.cartesJoueurs = {
+                    rouge: [],
+                    bleu: [],
+                    jaune: [],
+                    vert: []
+                };
+                this.tourActuel = "rouge";
             }
 
             obtenirVoisins(pos) {
@@ -177,7 +502,6 @@
                 const tuile = this.grille[pos.y][pos.x];
                 if (!tuile) return voisins;
 
-                // Directions : [dx, dy, bit_actuel, bit_voisin]
                 const directions = [
                     [0, -1, TuileBitmap.HAUT, TuileBitmap.BAS],    // Haut
                     [1, 0, TuileBitmap.DROITE, TuileBitmap.GAUCHE], // Droite
@@ -202,11 +526,37 @@
 
             copier() {
                 const nouveauPlateau = new PlateauBitmap();
-                nouveauPlateau.grille = this.grille.map(row => [...row]);
-                nouveauPlateau.tuileSupplementaire = this.tuileSupplementaire;
+                nouveauPlateau.grille = this.grille.map(row => row.map(t => t ? new TuileBitmap(t.bits, t.aTresor, t.estFixe) : null));
+                nouveauPlateau.tuileSupplementaire = new TuileBitmap(this.tuileSupplementaire.bits, this.tuileSupplementaire.aTresor);
                 nouveauPlateau.positionsPions = {...this.positionsPions};
                 nouveauPlateau.tresors = {...this.tresors};
+                nouveauPlateau.cartesJoueurs = {
+                    rouge: [...this.cartesJoueurs.rouge],
+                    bleu: [...this.cartesJoueurs.bleu],
+                    jaune: [...this.cartesJoueurs.jaune],
+                    vert: [...this.cartesJoueurs.vert]
+                };
+                nouveauPlateau.tourActuel = this.tourActuel;
                 return nouveauPlateau;
+            }
+            
+            obtenirProchainTresor(couleurJoueur) {
+                const cartes = this.cartesJoueurs[couleurJoueur];
+                if (cartes.length === 0) return null;
+                return cartes[0];
+            }
+            
+            obtenirPositionTresor(nomTresor) {
+                if (!nomTresor) return null;
+                for (let y = 0; y < 7; y++) {
+                    for (let x = 0; x < 7; x++) {
+                        const tuile = this.grille[y][x];
+                        if (tuile && tuile.aTresor === nomTresor) {
+                            return new Position(x, y);
+                        }
+                    }
+                }
+                return null;
             }
         }
 
@@ -218,228 +568,138 @@
                 this.direction = direction; // "haut", "bas", "gauche", "droite"
                 this.rotation = rotation; // 0, 1, 2, 3 (0°=0, 90°=1, etc.)
             }
-        }
-
-        // ====================== ALGORITHMES ======================
-
-        // --- Génération des 48 coups ---
-        function genererCoupsPossibles() {
-            const coups = [];
-            // Rangées (3) × 2 directions (gauche/droite) × 4 rotations
-            for (let i = 0; i < 3; i++) {
-                for (const dir of ["gauche", "droite"]) {
-                    for (let rot = 0; rot < 4; rot++) {
-                        coups.push(new Coup("rangée", i, dir, rot));
-                    }
-                }
-            }
-            // Colonnes (3) × 2 directions (haut/bas) × 4 rotations
-            for (let i = 0; i < 3; i++) {
-                for (const dir of ["haut", "bas"]) {
-                    for (let rot = 0; rot < 4; rot++) {
-                        coups.push(new Coup("colonne", i, dir, rot));
-                    }
-                }
-            }
-            return coups; // 48 coups
-        }
-
-        // --- Simulation d'un coup ---
-        function simulerCoup(plateau, coup) {
-            const nouveauPlateau = plateau.copier();
-            let nouvelleTuileSupp = nouveauPlateau.tuileSupplementaire;
-
-            // Appliquer la rotation
-            if (coup.rotation === 1) nouvelleTuileSupp = nouvelleTuileSupp.tourner90();
-            else if (coup.rotation === 2) nouvelleTuileSupp = nouvelleTuileSupp.tourner180();
-            else if (coup.rotation === 3) nouvelleTuileSupp = nouvelleTuileSupp.tourner270();
-
-            // Déplacer la rangée ou colonne
-            if (coup.typeDeplacement === "rangée") {
-                [nouvelleTuileSupp, nouveauPlateau.grille] = deplacerRangee(
-                    nouveauPlateau.grille, coup.index, coup.direction, nouvelleTuileSupp
-                );
-            } else {
-                [nouvelleTuileSupp, nouveauPlateau.grille] = deplacerColonne(
-                    nouveauPlateau.grille, coup.index, coup.direction, nouvelleTuileSupp
-                );
-            }
-
-            nouveauPlateau.tuileSupplementaire = nouvelleTuileSupp;
-            return nouveauPlateau;
-        }
-
-        function deplacerRangee(grille, index, direction, tuileSupp) {
-            const nouvelleGrille = grille.map(row => [...row]);
-            const rangée = nouvelleGrille[index];
-
-            let tuileExpulsee;
-            if (direction === "gauche") {
-                // Insérer à droite, pousser vers la gauche
-                tuileExpulsee = rangée[0];
-                for (let j = 0; j < 6; j++) {
-                    rangée[j] = rangée[j + 1];
-                }
-                rangée[6] = tuileSupp;
-            } else { // droite
-                // Insérer à gauche, pousser vers la droite
-                tuileExpulsee = rangée[6];
-                for (let j = 6; j > 0; j--) {
-                    rangée[j] = rangée[j - 1];
-                }
-                rangée[0] = tuileSupp;
-            }
-            return [tuileExpulsee, nouvelleGrille];
-        }
-
-        function deplacerColonne(grille, index, direction, tuileSupp) {
-            const nouvelleGrille = grille.map(row => [...row]);
-
-            let tuileExpulsee;
-            if (direction === "haut") {
-                // Insérer en bas, pousser vers le haut
-                tuileExpulsee = nouvelleGrille[0][index];
-                for (let i = 0; i < 6; i++) {
-                    nouvelleGrille[i][index] = nouvelleGrille[i + 1][index];
-                }
-                nouvelleGrille[6][index] = tuileSupp;
-            } else { // bas
-                // Insérer en haut, pousser vers le bas
-                tuileExpulsee = nouvelleGrille[6][index];
-                for (let i = 6; i > 0; i--) {
-                    nouvelleGrille[i][index] = nouvelleGrille[i - 1][index];
-                }
-                nouvelleGrille[0][index] = tuileSupp;
-            }
-            return [tuileExpulsee, nouvelleGrille];
-        }
-
-        // --- Algorithme A* ---
-        function aStar(depart, arrivee, plateau) {
-            const ouvert = new PriorityQueue();
-            ouvert.enqueue(depart, 0);
-            const cameFrom = {};
-            const gScore = { [depart.toString()]: 0 };
-            const fScore = { [depart.toString()]: heuristiqueManhattan(depart, arrivee) };
-
-            while (!ouvert.isEmpty()) {
-                const courant = ouvert.dequeue().element;
-
-                if (courant.equals(arrivee)) {
-                    // Reconstruire le chemin
-                    const chemin = [];
-                    let current = courant;
-                    while (current.toString() in cameFrom) {
-                        chemin.push(current);
-                        current = cameFrom[current.toString()];
-                    }
-                    chemin.push(depart);
-                    return chemin.reverse();
-                }
-
-                for (const voisin of plateau.obtenirVoisins(courant)) {
-                    const tentativeG = gScore[courant.toString()] + 1;
-                    const voisinStr = voisin.toString();
-                    if (!(voisinStr in gScore) || tentativeG < gScore[voisinStr]) {
-                        cameFrom[voisinStr] = courant;
-                        gScore[voisinStr] = tentativeG;
-                        fScore[voisinStr] = tentativeG + heuristiqueManhattan(voisin, arrivee);
-                        ouvert.enqueue(voisin, fScore[voisinStr]);
-                    }
-                }
-            }
-            return null; // Pas de chemin
-        }
-
-        function heuristiqueManhattan(a, b) {
-            return Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
-        }
-
-        // --- File de priorité pour A* ---
-        class PriorityQueue {
-            constructor() {
-                this.elements = [];
-            }
-
-            enqueue(element, priority) {
-                this.elements.push({ element, priority });
-                this.elements.sort((a, b) => a.priority - b.priority);
-            }
-
-            dequeue() {
-                return this.elements.shift();
-            }
-
-            isEmpty() {
-                return this.elements.length === 0;
+            
+            toString() {
+                return `${this.typeDeplacement} ${this.index + 1} vers ${this.direction} (rotation: ${this.rotation * 90}°)`;
             }
         }
 
-        // --- Évaluation d'un coup ---
-        function evaluerCoup(plateau, couleurJoueur) {
-            const joueur = plateau.positionsPions[couleurJoueur];
-            const tresorActuel = obtenirProchainTresor(plateau, couleurJoueur);
-            if (!tresorActuel) return -Infinity; // Plus de trésor à trouver
+        // ====================== VARIABLES GLOBALES ======================
 
-            const chemin = aStar(joueur, tresorActuel, plateau);
-            if (!chemin) return -1000; // Pas de chemin
-
-            // Score = -longueur (plus court = meilleur) - risque adversaire
-            let score = -chemin.length;
-
-            // Pénaliser si le coup aide un adversaire
-            const couleursAdversaires = Object.keys(plateau.positionsPions).filter(c => c !== couleurJoueur);
-            for (const couleurAdv of couleursAdversaires) {
-                const tresorAdv = obtenirProchainTresor(plateau, couleurAdv);
-                if (tresorAdv) {
-                    const cheminAdv = aStar(plateau.positionsPions[couleurAdv], tresorAdv, plateau);
-                    if (cheminAdv && cheminAdv.length < 5) {
-                        score -= 10; // Pénalité si le coup aide un adversaire
-                    }
-                }
-            }
-
-            return score;
-        }
-
-        function obtenirProchainTresor(plateau, couleurJoueur) {
-            // Dans une vraie implémentation, il faudrait stocker les cartes trésors par joueur.
-            // Ici, on simplifie : on cherche n'importe quel trésor sur le plateau.
-            for (const [tresor, pos] of Object.entries(plateau.tresors)) {
-                return pos;
-            }
-            return null;
-        }
+        let plateau = new PlateauBitmap();
+        let meilleurCoupGlobal = null;
+        let cheminOptimalGlobal = [];
+        let modeEdition = false;
+        let tuileSelectionnee = null;
+        let couleurJoueurActuel = "rouge";
+        let pionGlisse = null;
+        let positionDepartPion = null;
 
         // ====================== INITIALISATION ======================
 
-        let plateau = new PlateauBitmap();
-
-        // Initialiser les tuiles fixes (coins)
-        plateau.grille[0][0] = new TuileBitmap(3, null, true); // L (haut+droite)
-        plateau.grille[0][6] = new TuileBitmap(6, null, true); // L (droite+bas)
-        plateau.grille[6][0] = new TuileBitmap(12, null, true); // L (gauche+bas)
-        plateau.grille[6][6] = new TuileBitmap(9, null, true); // L (haut+gauche)
-
-        // Placer quelques tuiles mobiles aléatoires
-        const typesTuiles = [1, 2, 3, 5, 6, 9, 10, 12, 15]; // Exemples de tuiles
-        for (let y = 0; y < 7; y++) {
-            for (let x = 0; x < 7; x++) {
-                if (!plateau.grille[y][x]) {
-                    const type = typesTuiles[Math.floor(Math.random() * typesTuiles.length)];
-                    plateau.grille[y][x] = new TuileBitmap(type);
+        function initialiserPlateauPhysique() {
+            // Initialisation des tuiles fixes aux coins
+            plateau.grille[0][0] = new TuileBitmap(3, null, true); // L (haut+droite)
+            plateau.grille[0][6] = new TuileBitmap(6, null, true); // L (droite+bas)
+            plateau.grille[6][0] = new TuileBitmap(12, null, true); // L (gauche+bas)
+            plateau.grille[6][6] = new TuileBitmap(9, null, true); // L (haut+gauche)
+            
+            // Initialisation des tuiles mobiles (exemple basé sur le plateau physique classique)
+            const tuilesPhysiques = [
+                [5, 1, 5, 1, 5, 1, 5], // Rangée 0
+                [2, 10, 14, 14, 14, 13, 2], // Rangée 1
+                [5, 13, 14, 14, 14, 10, 5], // Rangée 2
+                [1, 14, 14, 15, 14, 14, 1], // Rangée 3 (centre)
+                [5, 10, 14, 14, 14, 13, 5], // Rangée 4
+                [2, 13, 14, 14, 14, 10, 2], // Rangée 5
+                [5, 1, 5, 1, 5, 1, 5]  // Rangée 6
+            ];
+            
+            for (let y = 0; y < 7; y++) {
+                for (let x = 0; x < 7; x++) {
+                    // Ne pas écraser les tuiles fixes
+                    if (!plateau.grille[y][x]) {
+                        plateau.grille[y][x] = new TuileBitmap(tuilesPhysiques[y][x]);
+                    }
                 }
             }
+            
+            // Placer des trésors aléatoires
+            initialiserTresors();
+            
+            // Réinitialiser les cartes des joueurs
+            initialiserCartesJoueurs();
+            
+            afficherPlateau();
+            mettreAJourIndicateurTour();
+        }
+        
+        function initialiserPartieAleatoire() {
+            // Initialiser les tuiles fixes
+            plateau.grille[0][0] = new TuileBitmap(3, null, true);
+            plateau.grille[0][6] = new TuileBitmap(6, null, true);
+            plateau.grille[6][0] = new TuileBitmap(12, null, true);
+            plateau.grille[6][6] = new TuileBitmap(9, null, true);
+            
+            // Placer des tuiles mobiles aléatoires
+            const typesTuiles = [1, 2, 3, 5, 6, 9, 10, 12, 14, 15];
+            for (let y = 0; y < 7; y++) {
+                for (let x = 0; x < 7; x++) {
+                    if (!plateau.grille[y][x]) {
+                        const type = typesTuiles[Math.floor(Math.random() * typesTuiles.length)];
+                        plateau.grille[y][x] = new TuileBitmap(type);
+                    }
+                }
+            }
+            
+            initialiserTresors();
+            initialiserCartesJoueurs();
+            
+            afficherPlateau();
+            mettreAJourIndicateurTour();
+        }
+        
+        function initialiserTresors() {
+            // Retirer les anciens trésors
+            for (let y = 0; y < 7; y++) {
+                for (let x = 0; x < 7; x++) {
+                    if (plateau.grille[y][x]) {
+                        plateau.grille[y][x].aTresor = null;
+                    }
+                }
+            }
+            
+            plateau.tresors = {};
+            const symbolesTresors = ["👑", "⚔️", "🏆", "🔑", "💎", "📜", "🧙", "🐉", "🍄", "💰", "🛡️", "🌟"];
+            
+            // Placer 12 trésors (3 par joueur)
+            for (let i = 0; i < 12; i++) {
+                let x, y;
+                do {
+                    x = Math.floor(Math.random() * 7);
+                    y = Math.floor(Math.random() * 7);
+                } while (plateau.grille[y][x].estFixe); // Éviter les tuiles fixes
+                
+                const symbole = symbolesTresors[i % symbolesTresors.length];
+                plateau.grille[y][x].aTresor = symbole;
+                plateau.tresors[symbole] = new Position(x, y);
+            }
+        }
+        
+        function initialiserCartesJoueurs() {
+            const couleurs = ["rouge", "bleu", "jaune", "vert"];
+            const symboles = Object.keys(plateau.tresors);
+            
+            // Répartir les trésors entre les joueurs
+            for (let i = 0; i < couleurs.length; i++) {
+                plateau.cartesJoueurs[couleurs[i]] = [];
+            }
+            
+            // Mélanger les symboles
+            const symbolesMelanges = [...symboles].sort(() => Math.random() - 0.5);
+            
+            // Distribuer 3 trésors par joueur
+            for (let i = 0; i < symbolesMelanges.length; i++) {
+                const couleur = couleurs[i % couleurs.length];
+                plateau.cartesJoueurs[couleur].push(symbolesMelanges[i]);
+            }
+            
+            mettreAJourObjectif();
         }
 
-        // Placer des trésors aléatoires
-        const symbolesTresors = ["👑", "⚔️", "🏆", "🔑", "💎", "📜", "🧙", "🐉"];
-        for (let i = 0; i < 5; i++) {
-            const x = Math.floor(Math.random() * 7);
-            const y = Math.floor(Math.random() * 7);
-            const symbole = symbolesTresors[i % symbolesTresors.length];
-            plateau.grille[y][x].aTresor = symbole;
-            plateau.tresors[symbole] = new Position(x, y);
+        function reinitialiser() {
+            plateau = new PlateauBitmap();
+            initialiserPartieAleatoire();
         }
 
         // ====================== AFFICHAGE ======================
@@ -448,12 +708,28 @@
             const container = document.getElementById("plateau");
             container.innerHTML = "";
 
+            // Masquer l'indicateur de tuile supplémentaire
+            document.getElementById("tuile-supplementaire-indicateur").style.display = "none";
+
             for (let y = 0; y < 7; y++) {
                 for (let x = 0; x < 7; x++) {
                     const caseEl = document.createElement("div");
                     caseEl.className = "case";
+                    caseEl.dataset.x = x;
+                    caseEl.dataset.y = y;
+                    
                     if (plateau.grille[y][x]?.estFixe) {
                         caseEl.classList.add("fixe");
+                    }
+                    
+                    // Vérifier si cette case fait partie du chemin optimal
+                    if (cheminOptimalGlobal.some(pos => pos.x === x && pos.y === y)) {
+                        caseEl.classList.add("chemin-optimal");
+                    }
+                    
+                    // Vérifier si cette case fait partie du meilleur coup (rangée/colonne à déplacer)
+                    if (meilleurCoupGlobal && estCaseDansMeilleurCoup(x, y, meilleurCoupGlobal)) {
+                        caseEl.classList.add("meilleur-coup");
                     }
 
                     // Afficher les murs
@@ -479,91 +755,485 @@
                     for (const [couleur, pos] of Object.entries(plateau.positionsPions)) {
                         if (pos.x === x && pos.y === y) {
                             const pionEl = document.createElement("div");
-                            pionEl.className = `pion ${couleur}`;
+                            pionEl.className = `pion ${couleur} draggable`;
+                            pionEl.draggable = true;
+                            pionEl.dataset.couleur = couleur;
+                            
+                            // Ajouter le numéro du joueur
+                            const span = document.createElement("span");
+                            span.textContent = couleur[0].toUpperCase();
+                            pionEl.appendChild(span);
+                            
+                            // Événements de drag and drop
+                            pionEl.addEventListener('dragstart', (e) => {
+                                pionGlisse = couleur;
+                                positionDepartPion = new Position(x, y);
+                                e.dataTransfer.setData('text/plain', couleur);
+                                e.target.classList.add('dragging');
+                            });
+                            
+                            pionEl.addEventListener('dragend', (e) => {
+                                e.target.classList.remove('dragging');
+                            });
+                            
                             caseEl.appendChild(pionEl);
                         }
                     }
 
+                    // Événements pour le mode édition
+                    if (modeEdition && !plateau.grille[y][x]?.estFixe) {
+                        caseEl.classList.add("draggable");
+                        caseEl.addEventListener('click', () => {
+                            if (tuileSelectionnee && modeEdition) {
+                                plateau.grille[y][x] = new TuileBitmap(
+                                    tuileSelectionnee.bits,
+                                    null,
+                                    false
+                                );
+                                afficherPlateau();
+                            }
+                        });
+                    }
+                    
+                    // Événements pour le drop des pions
+                    caseEl.addEventListener('dragover', (e) => {
+                        e.preventDefault();
+                    });
+                    
+                    caseEl.addEventListener('drop', (e) => {
+                        e.preventDefault();
+                        if (pionGlisse && positionDepartPion) {
+                            const couleur = pionGlisse;
+                            const nouvellePos = new Position(parseInt(e.target.dataset.x), parseInt(e.target.dataset.y));
+                            
+                            // Vérifier si la case est libre
+                            let caseLibre = true;
+                            for (const pos of Object.values(plateau.positionsPions)) {
+                                if (pos.x === nouvellePos.x && pos.y === nouvellePos.y) {
+                                    caseLibre = false;
+                                    break;
+                                }
+                            }
+                            
+                            if (caseLibre) {
+                                plateau.positionsPions[couleur] = nouvellePos;
+                                afficherPlateau();
+                            }
+                        }
+                    });
+
                     container.appendChild(caseEl);
                 }
             }
+            
+            // Afficher la tuile supplémentaire
+            afficherTuileSupplementaire();
+        }
+        
+        function afficherTuileSupplementaire() {
+            const indicateur = document.getElementById("tuile-supplementaire-indicateur");
+            const tuile = plateau.tuileSupplementaire;
+            
+            if (!tuile) {
+                indicateur.style.display = "none";
+                return;
+            }
+            
+            // Positionner l'indicateur selon le meilleur coup
+            if (meilleurCoupGlobal) {
+                indicateur.style.display = "block";
+                
+                // Calculer la position de l'indicateur
+                let left, top;
+                if (meilleurCoupGlobal.typeDeplacement === "rangée") {
+                    const y = meilleurCoupGlobal.index;
+                    if (meilleurCoupGlobal.direction === "gauche") {
+                        left = "422px"; // 7*60 + 1px * 6 = 421px
+                        top = `${y * 61}px`; // 60px + 1px
+                    } else { // droite
+                        left = "-61px";
+                        top = `${y * 61}px`;
+                    }
+                } else { // colonne
+                    const x = meilleurCoupGlobal.index;
+                    if (meilleurCoupGlobal.direction === "haut") {
+                        left = `${x * 61}px`;
+                        top = "422px";
+                    } else { // bas
+                        left = `${x * 61}px`;
+                        top = "-61px";
+                    }
+                }
+                
+                indicateur.style.left = left;
+                indicateur.style.top = top;
+                
+                // Appliquer la rotation à l'indicateur
+                const preview = indicateur.querySelector('.tuile-preview');
+                if (preview) {
+                    indicateur.removeChild(preview);
+                }
+                
+                const tuilePreview = document.createElement("div");
+                tuilePreview.className = "tuile-preview";
+                
+                // Appliquer la rotation
+                let tuileARotatee = tuile;
+                for (let i = 0; i < meilleurCoupGlobal.rotation; i++) {
+                    tuileARotatee = tuileARotatee.tourner90();
+                }
+                
+                // Afficher les murs de la tuile rotée
+                const murs = tuileARotatee.obtenirMurs();
+                for (const mur of murs) {
+                    const murEl = document.createElement("div");
+                    murEl.className = `mur ${mur}`;
+                    tuilePreview.appendChild(murEl);
+                }
+                
+                indicateur.appendChild(tuilePreview);
+            } else {
+                indicateur.style.display = "none";
+            }
+        }
+        
+        function estCaseDansMeilleurCoup(x, y, coup) {
+            if (coup.typeDeplacement === "rangée") {
+                return y === coup.index;
+            } else { // colonne
+                return x === coup.index;
+            }
         }
 
-        // ====================== FONCTIONS UTILITAIRES ======================
+        // ====================== ALGORITHMES ======================
+
+        function genererCoupsPossibles() {
+            const coups = [];
+            for (let i = 0; i < 3; i++) {
+                for (const dir of ["gauche", "droite"]) {
+                    for (let rot = 0; rot < 4; rot++) {
+                        coups.push(new Coup("rangée", i, dir, rot));
+                    }
+                }
+            }
+            for (let i = 0; i < 3; i++) {
+                for (const dir of ["haut", "bas"]) {
+                    for (let rot = 0; rot < 4; rot++) {
+                        coups.push(new Coup("colonne", i, dir, rot));
+                    }
+                }
+            }
+            return coups;
+        }
+
+        function simulerCoup(plateau, coup) {
+            const nouveauPlateau = plateau.copier();
+            let nouvelleTuileSupp = nouveauPlateau.tuileSupplementaire;
+
+            // Appliquer la rotation
+            if (coup.rotation === 1) nouvelleTuileSupp = nouvelleTuileSupp.tourner90();
+            else if (coup.rotation === 2) nouvelleTuileSupp = nouvelleTuileSupp.tourner180();
+            else if (coup.rotation === 3) nouvelleTuileSupp = nouvelleTuileSupp.tourner270();
+
+            if (coup.typeDeplacement === "rangée") {
+                [nouvelleTuileSupp, nouveauPlateau.grille] = deplacerRangee(
+                    nouveauPlateau.grille, coup.index, coup.direction, nouvelleTuileSupp
+                );
+            } else {
+                [nouvelleTuileSupp, nouveauPlateau.grille] = deplacerColonne(
+                    nouveauPlateau.grille, coup.index, coup.direction, nouvelleTuileSupp
+                );
+            }
+
+            nouveauPlateau.tuileSupplementaire = nouvelleTuileSupp;
+            return nouveauPlateau;
+        }
+
+        function deplacerRangee(grille, index, direction, tuileSupp) {
+            const nouvelleGrille = grille.map(row => [...row]);
+            const rangée = nouvelleGrille[index];
+
+            let tuileExpulsee;
+            if (direction === "gauche") {
+                tuileExpulsee = rangée[0];
+                for (let j = 0; j < 6; j++) {
+                    rangée[j] = rangée[j + 1];
+                }
+                rangée[6] = tuileSupp;
+            } else {
+                tuileExpulsee = rangée[6];
+                for (let j = 6; j > 0; j--) {
+                    rangée[j] = rangée[j - 1];
+                }
+                rangée[0] = tuileSupp;
+            }
+            return [tuileExpulsee, nouvelleGrille];
+        }
+
+        function deplacerColonne(grille, index, direction, tuileSupp) {
+            const nouvelleGrille = grille.map(row => [...row]);
+
+            let tuileExpulsee;
+            if (direction === "haut") {
+                tuileExpulsee = nouvelleGrille[0][index];
+                for (let i = 0; i < 6; i++) {
+                    nouvelleGrille[i][index] = nouvelleGrille[i + 1][index];
+                }
+                nouvelleGrille[6][index] = tuileSupp;
+            } else {
+                tuileExpulsee = nouvelleGrille[6][index];
+                for (let i = 6; i > 0; i--) {
+                    nouvelleGrille[i][index] = nouvelleGrille[i - 1][index];
+                }
+                nouvelleGrille[0][index] = tuileSupp;
+            }
+            return [tuileExpulsee, nouvelleGrille];
+        }
+
+        function aStar(depart, arrivee, plateau) {
+            const ouvert = new PriorityQueue();
+            ouvert.enqueue(depart, 0);
+            const cameFrom = {};
+            const gScore = { [depart.toString()]: 0 };
+            const fScore = { [depart.toString()]: heuristiqueManhattan(depart, arrivee) };
+
+            while (!ouvert.isEmpty()) {
+                const courant = ouvert.dequeue().element;
+
+                if (courant.equals(arrivee)) {
+                    const chemin = [];
+                    let current = courant;
+                    while (current.toString() in cameFrom) {
+                        chemin.push(current);
+                        current = cameFrom[current.toString()];
+                    }
+                    chemin.push(depart);
+                    return chemin.reverse();
+                }
+
+                for (const voisin of plateau.obtenirVoisins(courant)) {
+                    const tentativeG = gScore[courant.toString()] + 1;
+                    const voisinStr = voisin.toString();
+                    if (!(voisinStr in gScore) || tentativeG < gScore[voisinStr]) {
+                        cameFrom[voisinStr] = courant;
+                        gScore[voisinStr] = tentativeG;
+                        fScore[voisinStr] = tentativeG + heuristiqueManhattan(voisin, arrivee);
+                        ouvert.enqueue(voisin, fScore[voisinStr]);
+                    }
+                }
+            }
+            return null;
+        }
+
+        function heuristiqueManhattan(a, b) {
+            return Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
+        }
+
+        class PriorityQueue {
+            constructor() {
+                this.elements = [];
+            }
+
+            enqueue(element, priority) {
+                this.elements.push({ element, priority });
+                this.elements.sort((a, b) => a.priority - b.priority);
+            }
+
+            dequeue() {
+                return this.elements.shift();
+            }
+
+            isEmpty() {
+                return this.elements.length === 0;
+            }
+        }
+
+        function evaluerCoup(plateau, couleurJoueur) {
+            const joueurPos = plateau.positionsPions[couleurJoueur];
+            const tresorActuel = plateau.obtenirProchainTresor(couleurJoueur);
+            
+            if (!tresorActuel) return -Infinity;
+            
+            const tresorPos = plateau.obtenirPositionTresor(tresorActuel);
+            if (!tresorPos) return -1000;
+            
+            const chemin = aStar(joueurPos, tresorPos, plateau);
+            if (!chemin) return -1000;
+
+            let score = -chemin.length;
+
+            // Pénaliser si le coup aide un adversaire
+            const couleursAdversaires = Object.keys(plateau.positionsPions).filter(c => c !== couleurJoueur);
+            for (const couleurAdv of couleursAdversaires) {
+                const tresorAdv = plateau.obtenirProchainTresor(couleurAdv);
+                if (tresorAdv) {
+                    const tresorAdvPos = plateau.obtenirPositionTresor(tresorAdv);
+                    if (tresorAdvPos) {
+                        const cheminAdv = aStar(plateau.positionsPions[couleurAdv], tresorAdvPos, plateau);
+                        if (cheminAdv && cheminAdv.length < 5) {
+                            score -= 10;
+                        }
+                    }
+                }
+            }
+
+            return score;
+        }
+
+        // ====================== FONCTIONS PRINCIPALES ======================
 
         function calculerMeilleurCoup() {
+            const couleurJoueur = document.getElementById("joueur-actuel").value;
             const coups = genererCoupsPossibles();
             let meilleurCoup = null;
             let meilleurScore = -Infinity;
+            let meilleurChemin = [];
 
             for (const coup of coups) {
                 const nouveauPlateau = simulerCoup(plateau, coup);
-                const score = evaluerCoup(nouveauPlateau, "rouge");
+                const score = evaluerCoup(nouveauPlateau, couleurJoueur);
+                
                 if (score > meilleurScore) {
                     meilleurScore = score;
                     meilleurCoup = coup;
+                    
+                    // Calculer le chemin pour ce coup
+                    const joueurPos = nouveauPlateau.positionsPions[couleurJoueur];
+                    const tresorActuel = nouveauPlateau.obtenirProchainTresor(couleurJoueur);
+                    if (tresorActuel) {
+                        const tresorPos = nouveauPlateau.obtenirPositionTresor(tresorActuel);
+                        if (tresorPos) {
+                            const chemin = aStar(joueurPos, tresorPos, nouveauPlateau);
+                            if (chemin) {
+                                meilleurChemin = chemin;
+                            }
+                        }
+                    }
                 }
             }
 
             if (meilleurCoup) {
-                document.getElementById("meilleur-coup").textContent =
-                    `Déplacer ${meilleurCoup.typeDeplacement} ${meilleurCoup.index + 1} vers ${meilleurCoup.direction} (rotation: ${meilleurCoup.rotation * 90}°)`;
-
-                // Calculer le chemin après le coup
-                const nouveauPlateau = simulerCoup(plateau, meilleurCoup);
-                const joueurPos = nouveauPlateau.positionsPions["rouge"];
-                const tresorPos = obtenirProchainTresor(nouveauPlateau, "rouge");
-                if (tresorPos) {
-                    const chemin = aStar(joueurPos, tresorPos, nouveauPlateau);
-                    if (chemin) {
-                        document.getElementById("chemin-longueur").textContent = chemin.length;
-                    }
-                }
+                meilleurCoupGlobal = meilleurCoup;
+                cheminOptimalGlobal = meilleurChemin;
+                
+                document.getElementById("meilleur-coup").textContent = meilleurCoup.toString();
+                document.getElementById("chemin-longueur").textContent = meilleurChemin.length;
+                document.getElementById("score-coup").textContent = Math.round(meilleurScore);
+                
+                afficherPlateau();
+            } else {
+                document.getElementById("meilleur-coup").textContent = "Aucun coup valide";
+                document.getElementById("chemin-longueur").textContent = "-";
+                document.getElementById("score-coup").textContent = "-";
             }
         }
-
+        
+        function jouerMeilleurCoup() {
+            if (!meilleurCoupGlobal) {
+                alert("Calculez d'abord le meilleur coup !");
+                return;
+            }
+            
+            plateau = simulerCoup(plateau, meilleurCoupGlobal);
+            
+            // Passer au tour suivant
+            passerTour();
+            
+            // Réinitialiser les variables globales
+            meilleurCoupGlobal = null;
+            cheminOptimalGlobal = [];
+            
+            afficherPlateau();
+            document.getElementById("meilleur-coup").textContent = "Aucun calculé";
+            document.getElementById("chemin-longueur").textContent = "-";
+            document.getElementById("score-coup").textContent = "-";
+        }
+        
         function simulerCoupAleatoire() {
             const coups = genererCoupsPossibles();
             const coup = coups[Math.floor(Math.random() * coups.length)];
             plateau = simulerCoup(plateau, coup);
+            
+            // Passer au tour suivant
+            passerTour();
+            
             afficherPlateau();
+            mettreAJourObjectif();
+        }
+        
+        function passerTour() {
+            const couleurs = ["rouge", "bleu", "jaune", "vert"];
+            const indexActuel = couleurs.indexOf(plateau.tourActuel);
+            const indexSuivant = (indexActuel + 1) % couleurs.length;
+            plateau.tourActuel = couleurs[indexSuivant];
+            
+            mettreAJourIndicateurTour();
+            mettreAJourObjectif();
         }
 
-        function reinitialiser() {
-            plateau = new PlateauBitmap();
-            // Réinitialiser les tuiles fixes
-            plateau.grille[0][0] = new TuileBitmap(3, null, true);
-            plateau.grille[0][6] = new TuileBitmap(6, null, true);
-            plateau.grille[6][0] = new TuileBitmap(12, null, true);
-            plateau.grille[6][6] = new TuileBitmap(9, null, true);
+        // ====================== FONCTIONS UI ======================
 
-            // Réinitialiser les tuiles mobiles
-            const typesTuiles = [1, 2, 3, 5, 6, 9, 10, 12, 15];
-            for (let y = 0; y < 7; y++) {
-                for (let x = 0; x < 7; x++) {
-                    if (!plateau.grille[y][x]) {
-                        const type = typesTuiles[Math.floor(Math.random() * typesTuiles.length)];
-                        plateau.grille[y][x] = new TuileBitmap(type);
-                    }
-                }
+        function toggleModeEdition() {
+            modeEdition = document.getElementById("mode-edition-toggle").checked;
+            const selector = document.getElementById("tuile-selector");
+            selector.style.display = modeEdition ? "flex" : "none";
+            
+            if (modeEdition) {
+                // Sélectionner la première tuile par défaut
+                selectTuileType(5, 0);
             }
-
-            // Réinitialiser les trésors
-            plateau.tresors = {};
-            const symbolesTresors = ["👑", "⚔️", "🏆", "🔑", "💎"];
-            for (let i = 0; i < 5; i++) {
-                const x = Math.floor(Math.random() * 7);
-                const y = Math.floor(Math.random() * 7);
-                const symbole = symbolesTresors[i % symbolesTresors.length];
-                plateau.grille[y][x].aTresor = symbole;
-                plateau.tresors[symbole] = new Position(x, y);
-            }
-
+            
             afficherPlateau();
+        }
+        
+        function selectTuileType(bits, rotation) {
+            // Désélectionner les autres
+            document.querySelectorAll('.tuile-option').forEach(el => {
+                el.classList.remove('selected');
+            });
+            
+            // Sélectionner celle-ci
+            event.target.classList.add('selected');
+            
+            // Créer la tuile
+            let tuile = new TuileBitmap(bits);
+            for (let i = 0; i < rotation; i++) {
+                tuile = tuile.tourner90();
+            }
+            tuileSelectionnee = tuile;
+        }
+        
+        function mettreAJourObjectif() {
+            const couleurJoueur = document.getElementById("joueur-actuel").value;
+            couleurJoueurActuel = couleurJoueur;
+            
+            const tresorActuel = plateau.obtenirProchainTresor(couleurJoueur);
+            const texteEl = document.getElementById("objectif-texte");
+            const iconEl = document.getElementById("objectif-icon");
+            
+            if (tresorActuel) {
+                texteEl.textContent = tresorActuel;
+                iconEl.textContent = tresorActuel;
+            } else {
+                texteEl.textContent = "Tous les trésors trouvés !";
+                iconEl.textContent = "✅";
+            }
+        }
+        
+        function mettreAJourIndicateurTour() {
+            const couleurs = {
+                rouge: "🔴 Rouge",
+                bleu: "🔵 Bleu",
+                jaune: "🟡 Jaune",
+                vert: "🟢 Vert"
+            };
+            document.getElementById("tour-actuel").textContent = couleurs[plateau.tourActuel] || "Inconnu";
         }
 
         // ====================== DÉMARRAGE ======================
-        afficherPlateau();
+        initialiserPlateauPhysique();
+        mettreAJourIndicateurTour();
+        mettreAJourObjectif();
     </script>
 </body>
 </html>
